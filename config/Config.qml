@@ -27,7 +27,6 @@ Singleton {
     property alias services: adapter.services
     property alias paths: adapter.paths
 
-    // Public save function - call this to persist config changes
     function save(): void {
         saveTimer.restart();
         recentlySaved = true;
@@ -47,19 +46,15 @@ Singleton {
         onTriggered: {
             timer.restart();
             try {
-                // Parse current config to preserve structure and comments if possible
                 let config = {};
                 try {
                     config = JSON.parse(fileView.text());
                 } catch (e) {
-                    // If parsing fails, start with empty object
                     config = {};
                 }
 
-                // Update config with current values
                 config = serializeConfig();
 
-                // Save to file with pretty printing
                 fileView.setText(JSON.stringify(config, null, 2));
             } catch (e) {
                 Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
@@ -76,7 +71,6 @@ Singleton {
         }
     }
 
-    // Helper function to serialize the config object
     function serializeConfig(): var {
         return {
             appearance: serializeAppearance(),
@@ -122,6 +116,8 @@ Singleton {
                 }
             },
             anim: {
+                mediaGifSpeedAdjustment: 300,
+                sessionGifSpeed: 0.7,
                 durations: {
                     scale: appearance.anim.durations.scale
                 }
@@ -136,7 +132,6 @@ Singleton {
 
     function serializeGeneral(): var {
         return {
-            logo: general.logo,
             apps: {
                 terminal: general.apps.terminal,
                 audio: general.apps.audio,
@@ -158,6 +153,7 @@ Singleton {
     function serializeBackground(): var {
         return {
             enabled: background.enabled,
+            wallpaperEnabled: background.wallpaperEnabled,
             desktopClock: {
                 enabled: background.desktopClock.enabled,
                 scale: background.desktopClock.scale,
@@ -239,7 +235,8 @@ Singleton {
                 batteryWidth: bar.sizes.batteryWidth,
                 networkWidth: bar.sizes.networkWidth
             },
-            entries: bar.entries
+            entries: bar.entries,
+            excludedScreens: bar.excludedScreens
         };
     }
 
@@ -254,8 +251,16 @@ Singleton {
         return {
             enabled: dashboard.enabled,
             showOnHover: dashboard.showOnHover,
-            mediaUpdateInterval: dashboard.mediaUpdateInterval,
+            updateInterval: dashboard.updateInterval,
             dragThreshold: dashboard.dragThreshold,
+            performance: {
+                showBattery: dashboard.performance.showBattery,
+                showGpu: dashboard.performance.showGpu,
+                showCpu: dashboard.performance.showCpu,
+                showMemory: dashboard.performance.showMemory,
+                showStorage: dashboard.performance.showStorage,
+                showNetwork: dashboard.performance.showNetwork
+            },
             sizes: {
                 tabIndicatorHeight: dashboard.sizes.tabIndicatorHeight,
                 tabIndicatorSpacing: dashboard.sizes.tabIndicatorSpacing,
@@ -296,6 +301,7 @@ Singleton {
             folderWrapAround: launcher.folderWrapAround,
             folderSelection: launcher.folderSelection,
             vimKeybinds: launcher.vimKeybinds,
+            favouriteApps: launcher.favouriteApps,
             hiddenApps: launcher.hiddenApps,
             useFuzzy: {
                 apps: launcher.useFuzzy.apps,
@@ -348,6 +354,12 @@ Singleton {
             enabled: session.enabled,
             dragThreshold: session.dragThreshold,
             vimKeybinds: session.vimKeybinds,
+            icons: {
+                logout: session.icons.logout,
+                shutdown: session.icons.shutdown,
+                hibernate: session.icons.hibernate,
+                reboot: session.icons.reboot
+            },
             commands: {
                 logout: session.commands.logout,
                 shutdown: session.commands.shutdown,
@@ -374,13 +386,17 @@ Singleton {
             recolourLogo: lock.recolourLogo,
             enableFprint: lock.enableFprint,
             maxFprintTries: lock.maxFprintTries,
+            verticalScreens: lock.verticalScreens,
+            excludedScreens: lock.excludedScreens,
             sizes: {
                 heightMult: lock.sizes.heightMult,
                 ratio: lock.sizes.ratio,
+                ratioVertical: lock.sizes.ratioVertical,
                 centerWidth: lock.sizes.centerWidth
-            }
+         }
         };
     }
+
 
     function serializeUtilities(): var {
         return {
@@ -450,12 +466,10 @@ Singleton {
         path: `${Paths.config}/shell.json`
         watchChanges: true
         onFileChanged: {
-            // Prevent reload loop - don't reload if we just saved
             if (!recentlySaved) {
                 timer.restart();
                 reload();
             } else {
-                // Self-initiated save - reload without toast
                 reload();
             }
         }
@@ -463,7 +477,6 @@ Singleton {
             try {
                 JSON.parse(text());
                 const elapsed = timer.elapsedMs();
-                // Only show toast for external changes (not our own saves) and when elapsed time is meaningful
                 if (adapter.utilities.toasts.configLoaded && !recentlySaved && elapsed > 0) {
                     Toaster.toast(qsTr("Config loaded"), qsTr("Config loaded in %1ms").arg(elapsed), "rule_settings");
                 } else if (adapter.utilities.toasts.configLoaded && recentlySaved && elapsed > 0) {

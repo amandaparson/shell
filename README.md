@@ -219,6 +219,8 @@ default, you must create it manually.
 ```json
 {
     "appearance": {
+        "mediaGifSpeedAdjustment": 300,
+        "sessionGifSpeed": 0.7,
         "anim": {
             "durations": {
                 "scale": 1
@@ -434,6 +436,28 @@ default, you must create it manually.
         "actionPrefix": ">",
         "actions": [
             {
+              "name": "Example subaction",
+              "icon": "tune",
+              "description": "example of a subaction",
+              "command": ["openGroup", "example"],
+              "enabled": true,
+              "dangerous": false,
+              "children": [
+                {
+                  "name": "action1",
+                  "icon": "settings",
+                  "description": "example of action1",
+                  "command": [""]
+                },
+                {
+                  "name": "action2",
+                  "icon": "settings",
+                  "description": "example of action2",
+                  "command": [""]
+                }
+              ]
+            },
+            {
                 "name": "Calculator",
                 "icon": "calculate",
                 "description": "Do simple math equations (powered by Qalc)",
@@ -560,6 +584,7 @@ default, you must create it manually.
             "wallpapers": false
         },
         "showOnHover": false,
+        "favouriteApps": [],
         "hiddenApps": []
     },
     "lock": {
@@ -601,6 +626,12 @@ default, you must create it manually.
         "dragThreshold": 30,
         "enabled": true,
         "vimKeybinds": false,
+        "icons": {
+            "logout": "logout",
+            "shutdown": "power_settings_new",
+            "hibernate": "downloading",
+            "reboot": "cached"
+        },
         "commands": {
             "logout": ["loginctl", "terminate-user", ""],
             "shutdown": ["systemctl", "poweroff"],
