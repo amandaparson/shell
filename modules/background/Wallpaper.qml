@@ -11,13 +11,117 @@ import QtQuick
 
 Item {
     id: root
-
+	property bool ready: false
     property string source: Wallpapers.current
     property Image current: one
-    property bool ready: false
+    property string transitionType: Config.background.wallpaperTransition ?? "fade"
+    property string activeTransitionType: "fade"
+    property real transitionProgress: 0
+    property real wipeDirection: 0
+    property real discCenterX: 0.5
+    property real discCenterY: 0.5
+    property real stripesCount: 16
+    property real stripesAngle: 0
+    readonly property bool transitioning: transitionAnimation.running
+    property string pendingWallpaper: ""
+    readonly property var availableTransitions: ["fade", "wipe", "disc", "stripes"]
+	
+    anchors.fill: parent
 
-    Component.onCompleted: {
-        if (source) Qt.callLater(() => one.update());
+    function getScheduledWallpaper() {
+        try {
+            if (!root.enabled) return "";
+            
+            const tbw = Config.background.timeBasedWallpaper;
+            if (tbw !== true) return "";
+            
+            const schedule = Config.background.wallpaperSchedule;
+            if (!schedule || schedule.length === 0) return "";
+            
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            for (let i = 0; i < schedule.length; i++) {
+                const entry = schedule[i];
+                if (!entry || !entry.startTime || !entry.wallpaper) continue;
+                
+                const timeParts = entry.startTime.split(":");
+                if (timeParts.length !== 2) continue;
+                
+                const startMinutes = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+                if (isNaN(startMinutes)) continue;
+                
+                let endMinutes = 24 * 60;
+                if (i < schedule.length - 1) {
+                    const nextEntry = schedule[i + 1];
+                    if (nextEntry && nextEntry.startTime) {
+                        const nextParts = nextEntry.startTime.split(":");
+                        if (nextParts.length === 2) {
+                            const nextMinutes = parseInt(nextParts[0]) * 60 + parseInt(nextParts[1]);
+                            if (!isNaN(nextMinutes)) {
+                                endMinutes = nextMinutes;
+                            }
+                        }
+                    }
+                }
+                
+                if (startMinutes <= currentMinutes && currentMinutes < endMinutes) {
+                    return entry.wallpaper;
+                }
+            }
+            if (schedule.length > 0 && schedule[0].wallpaper) {
+                return schedule[0].wallpaper;
+            }
+            
+            return "";
+        } catch (e) {
+            console.error("Error in getScheduledWallpaper:", e);
+            return "";
+        }
+    }
+
+    function setWallpaperWithTransition(newSource) {
+        if (newSource === one.path) {
+            return;
+        }
+
+        if (transitioning) {
+            transitionAnimation.stop();
+            transitionProgress = 0;
+            const newCurrentSource = two.path;
+            one.path = newCurrentSource;
+            Qt.callLater(() => {
+                two.path = "";
+                Qt.callLater(() => {
+                    two.path = newSource;
+                    transitionAnimation.start();
+                });
+            });
+            return;
+        }
+
+        two.path = newSource;
+        transitionAnimation.start();
+    }
+
+    function changeWallpaper() {
+        if (transitionType === "random") {
+            const index = Math.floor(Math.random() * availableTransitions.length);
+            activeTransitionType = availableTransitions[index];
+        } else {
+            activeTransitionType = transitionType;
+        }
+
+        if (activeTransitionType === "wipe")
+            wipeDirection = Math.random() * 4;
+        else if (activeTransitionType === "disc") {
+            discCenterX = Math.random();
+            discCenterY = Math.random();
+        } else if (activeTransitionType === "stripes") {
+            stripesCount = Math.round(Math.random() * 20 + 4);
+            stripesAngle = Math.random() * 360;
+        }
+        setWallpaperWithTransition(pendingWallpaper);
     }
 
     onSourceChanged: {
@@ -100,7 +204,11 @@ Item {
             }
         }
     }
-    
+ 
+ Component.onCompleted: {
+        if (source) Qt.callLater(() => one.update());
+    }
+  
     Timer {
         id: minuteAlignTimer
         interval: 1000
