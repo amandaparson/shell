@@ -1,11 +1,10 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
+import QtQuick.Layouts
 import qs.components
 import qs.services
 import qs.config
-import qs.utils
-import QtQuick
-import QtQuick.Layouts
 
 ColumnLayout {
     id: root
@@ -19,6 +18,7 @@ ColumnLayout {
     spacing: Appearance.spacing.small
 
     Loader {
+        asynchronous: true
         Layout.topMargin: Appearance.padding.large * 2
         Layout.bottomMargin: -Appearance.padding.large
         Layout.alignment: Qt.AlignHCenter
@@ -72,6 +72,7 @@ ColumnLayout {
         }
 
         Loader {
+            asynchronous: true
             Layout.rightMargin: Appearance.padding.smaller
             asynchronous: true
             active: root.width > 400
@@ -109,6 +110,7 @@ ColumnLayout {
     Loader {
         id: forecastLoader
 
+        asynchronous: true
         Layout.topMargin: Appearance.spacing.smaller
         Layout.bottomMargin: Appearance.padding.large * 2
         Layout.fillWidth: true

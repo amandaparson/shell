@@ -1,13 +1,13 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
+import QtQuick.Layouts
 import qs.components
 import qs.components.controls
 import qs.components.images
 import qs.services
 import qs.config
 import qs.utils
-import QtQuick
-import QtQuick.Layouts
 
 ColumnLayout {
     id: root
@@ -57,6 +57,7 @@ ColumnLayout {
         }
 
         Loader {
+            asynchronous: true
             Layout.leftMargin: Appearance.spacing.small
             Layout.alignment: Qt.AlignVCenter
             asynchronous: true
@@ -130,9 +131,12 @@ ColumnLayout {
         }
 
         StateLayer {
+            function onClicked(): void {
+                parent.forceActiveFocus();
+            }
+
             hoverEnabled: false
             cursorShape: Qt.IBeamCursor
-            function onClicked(): void { parent.forceActiveFocus() }
         }
 
         RowLayout {
@@ -182,10 +186,11 @@ ColumnLayout {
                 radius: Appearance.rounding.full
 
                 StateLayer {
-                    color: root.lock.pam.buffer
-                        ? (Colours?.palette?.m3onPrimary ?? "black")
-                        : (Colours?.palette?.m3onSurface ?? "white")
-                    function onClicked(): void { root.lock.pam.passwd.start() }
+                    function onClicked(): void {
+                        root.lock.pam.passwd.start();
+                    }
+
+                    color: root.lock.pam.buffer ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
                 }
 
                 MaterialIcon {
@@ -313,12 +318,13 @@ ColumnLayout {
             }
 
             Connections {
-                target: root.lock.pam
                 function onFlashMsg(): void {
                     exitAnim.stop()
                     if (message.scale === 1) appearAnim.restart()
                     else flashAnim.restart()
                 }
+
+                target: root.lock.pam
             }
 
             Anim {

@@ -2,15 +2,16 @@ pragma ComponentBehavior: Bound
 
 import ".."
 import "../../components"
-import qs.components
-import qs.components.controls
-import qs.components.containers
-import qs.components.images
-import qs.services
-import qs.config
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qs.components
+import qs.components.containers
+import qs.components.controls
+import qs.components.images
+import qs.services
+import qs.config
+
 
 CollapsibleSection {
     id: root
@@ -434,9 +435,6 @@ CollapsibleSection {
     SectionContainer {
         id: posContainer
 
-        contentSpacing: Appearance.spacing.small
-        z: 1
-
         readonly property var pos: (rootPane.desktopClockPosition || "top-left").split('-')
         readonly property string currentV: pos[0]
         readonly property string currentH: pos[1]
@@ -445,6 +443,9 @@ CollapsibleSection {
             rootPane.desktopClockPosition = v + "-" + h;
             rootPane.saveConfig();
         }
+
+        contentSpacing: Appearance.spacing.small
+        z: 1
 
         StyledText {
             text: qsTr("Positioning")
@@ -458,19 +459,22 @@ CollapsibleSection {
 
             menuItems: [
                 MenuItem {
+                    property string val: "top"
+
                     text: qsTr("Top")
                     icon: "vertical_align_top"
-                    property string val: "top"
                 },
                 MenuItem {
+                    property string val: "middle"
+
                     text: qsTr("Middle")
                     icon: "vertical_align_center"
-                    property string val: "middle"
                 },
                 MenuItem {
+                    property string val: "bottom"
+
                     text: qsTr("Bottom")
                     icon: "vertical_align_bottom"
-                    property string val: "bottom"
                 }
             ]
 
@@ -492,19 +496,22 @@ CollapsibleSection {
 
             menuItems: [
                 MenuItem {
+                    property string val: "left"
+
                     text: qsTr("Left")
                     icon: "align_horizontal_left"
-                    property string val: "left"
                 },
                 MenuItem {
+                    property string val: "center"
+
                     text: qsTr("Center")
                     icon: "align_horizontal_center"
-                    property string val: "center"
                 },
                 MenuItem {
+                    property string val: "right"
+
                     text: qsTr("Right")
                     icon: "align_horizontal_right"
-                    property string val: "right"
                 }
             ]
 

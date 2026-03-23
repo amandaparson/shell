@@ -1,19 +1,20 @@
 pragma ComponentBehavior: Bound
-
+import Quickshell
+import QtQuick
 import qs.components
-import qs.components.images
 import qs.components.filedialog
+import qs.components.images
 import qs.services
 import qs.config
 import qs.utils
-import Quickshell
-import QtQuick
+
 
 Item {
     id: root
 	property bool ready: false
     property string source: Wallpapers.current
     property Image current: one
+    property bool completed
     property string transitionType: Config.background.wallpaperTransition ?? "fade"
     property string activeTransitionType: "fade"
     property real transitionProgress: 0
@@ -242,6 +243,7 @@ Item {
     }
 
     Loader {
+        asynchronous: true
         anchors.fill: parent
 
         active: root.ready && !root.source
@@ -287,12 +289,12 @@ Item {
                         }
 
                         StateLayer {
-                            radius: parent.radius
-                            color: Colours.palette.m3onPrimary
-
                             function onClicked(): void {
                                 dialog.open();
                             }
+
+                            radius: parent.radius
+                            color: Colours.palette.m3onPrimary
                         }
 
                         StyledText {

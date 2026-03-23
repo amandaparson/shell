@@ -1,10 +1,10 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
 import qs.components
 import qs.services
-import qs.utils
 import qs.config
-import QtQuick
+import qs.utils
 
 Item {
     id: root
@@ -19,7 +19,7 @@ Item {
             return qsTr("Desktop");
         if (Config.bar.activeWindow.compact) {
             // " - " (standard hyphen), " — " (em dash), " – " (en dash)
-            const parts = root.windowTitle.split(/\s+[\-\u2013\u2014]\s+/);
+            const parts = title.split(/\s+[\-\u2013\u2014]\s+/);
             if (parts.length > 1)
                 return parts[parts.length - 1].trim();
         }
@@ -39,6 +39,7 @@ Item {
     implicitHeight: icon.implicitHeight + current.implicitWidth + current.anchors.topMargin
 
     Loader {
+        asynchronous: true
         anchors.fill: parent
         active: !Config.bar.activeWindow.showOnHover
 

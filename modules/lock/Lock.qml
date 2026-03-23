@@ -1,11 +1,9 @@
 pragma ComponentBehavior: Bound
 
-import qs.components.misc
-import qs.config
-import Caelestia
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import qs.components.misc
 
 Scope {
     property alias lock: lock
@@ -67,21 +65,23 @@ Scope {
         lock: lock
     }
 
+    // qmllint disable unresolved-type
     CustomShortcut {
+        // qmllint enable unresolved-type
         name: "lock"
         description: "Lock the current session"
         onPressed: lock.safeLock()
     }
 
+    // qmllint disable unresolved-type
     CustomShortcut {
+        // qmllint enable unresolved-type
         name: "unlock"
         description: "Unlock the current session"
         onPressed: lock.unlock()
     }
 
     IpcHandler {
-        target: "lock"
-
         function lock(): void {
             lock.safeLock();
         }
@@ -93,5 +93,7 @@ Scope {
         function isLocked(): bool {
             return lock.locked;
         }
+
+        target: "lock"
     }
 }
