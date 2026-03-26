@@ -8,9 +8,8 @@ JsonObject {
     property Sizes sizes: Sizes {}
 
     component Sizes: JsonObject {
-        property real heightMult: 0.82
+        property real heightMult: 0.7
         property real ratio: 16 / 9
-        property real ratioVertical: 9 / 16
         property int centerWidth: 600
     }
 }
