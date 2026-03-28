@@ -20,6 +20,7 @@ JsonObject {
         }
     ]
     property bool showLyrics: true
+    property string lyricsBackend: "Auto"
     property SunsetService sunsetService: SunsetService {}
     
     component SunsetService: JsonObject {

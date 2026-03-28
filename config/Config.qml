@@ -373,6 +373,8 @@ Singleton {
             smartScheme: services.smartScheme,
             defaultPlayer: services.defaultPlayer,
             playerAliases: services.playerAliases,
+            showLyrics: services.showLyrics,
+            lyricsBackend: services.lyricsBackend
             sunsetService: {
                 manualEnabled: services.sunsetService.manualEnabled,
                 temperature: services.sunsetService.temperature,
