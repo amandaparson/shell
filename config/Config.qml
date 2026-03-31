@@ -36,6 +36,7 @@ Singleton {
         recentSaveCooldown.restart();
     }
 
+    // Helper function to serialize the config object
     function serializeConfig(): var {
         return {
             appearance: serializeAppearance(),
@@ -395,7 +396,7 @@ Singleton {
             defaultPlayer: services.defaultPlayer,
             playerAliases: services.playerAliases,
             showLyrics: services.showLyrics,
-            lyricsBackend: services.lyricsBackend
+            lyricsBackend: services.lyricsBackend,
             sunsetService: {
                 manualEnabled: services.sunsetService.manualEnabled,
                 temperature: services.sunsetService.temperature,
@@ -466,6 +467,7 @@ Singleton {
                 timer.restart();
                 reload();
             } else {
+                // Self-initiated save - reload without toast
                 reload();
             }
         }
