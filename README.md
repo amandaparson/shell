@@ -659,6 +659,8 @@ default, you must create it manually.
     "paths": {
         "mediaGif": "root:/assets/bongocat.gif",
         "sessionGif": "root:/assets/kurukuru.gif",
+        "noNotifsPic": "root:/assets/dino.png",
+        "lockNoNotifsPic": "root:/assets/dino.png",
         "wallpaperDir": "~/Pictures/Wallpapers",
         "lyricsDir": "~/Music/lyrics"
     },

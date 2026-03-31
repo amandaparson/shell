@@ -276,11 +276,13 @@ Singleton {
     function serializeNotifs(): var {
         return {
             expire: notifs.expire,
+            fullscreen: notifs.fullscreen,
             defaultExpireTimeout: notifs.defaultExpireTimeout,
             clearThreshold: notifs.clearThreshold,
             expandThreshold: notifs.expandThreshold,
             actionOnClick: notifs.actionOnClick,
-            groupPreviewNum: notifs.groupPreviewNum
+            groupPreviewNum: notifs.groupPreviewNum,
+            openExpanded: notifs.openExpanded
         };
     }
 
@@ -328,11 +330,30 @@ Singleton {
 
 
     function serializeUtilities(): var {
+        const vpnProviders = [];
+        for (let i = 0; i < utilities.vpn.provider.length; i++) {
+            const p = utilities.vpn.provider[i];
+            const provider = {
+                displayName: p.displayName,
+                enabled: p.enabled,
+                iface: p.iface,
+                name: p.name
+            };
+            if (p.connectCmd && p.connectCmd.length > 0) {
+                provider.connectCmd = p.connectCmd;
+            }
+            if (p.disconnectCmd && p.disconnectCmd.length > 0) {
+                provider.disconnectCmd = p.disconnectCmd;
+            }
+            vpnProviders.push(provider);
+        }
+
         return {
             enabled: utilities.enabled,
             maxToasts: utilities.maxToasts,
             toasts: {
                 configLoaded: utilities.toasts.configLoaded,
+                fullscreen: utilities.toasts.fullscreen,
                 chargingChanged: utilities.toasts.chargingChanged,
                 gameModeChanged: utilities.toasts.gameModeChanged,
                 dndChanged: utilities.toasts.dndChanged,
@@ -346,7 +367,7 @@ Singleton {
             },
             vpn: {
                 enabled: utilities.vpn.enabled,
-                provider: utilities.vpn.provider
+                provider: vpnProviders
             },
             quickToggles: utilities.quickToggles
         };
@@ -388,7 +409,9 @@ Singleton {
             wallpaperDir: paths.wallpaperDir,
             lyricsDir: paths.lyricsDir,
             sessionGif: paths.sessionGif,
-            mediaGif: paths.mediaGif
+            mediaGif: paths.mediaGif,
+            noNotifsPic: paths.noNotifsPic,
+            lockNoNotifsPic: paths.lockNoNotifsPic
         };
     }
 
