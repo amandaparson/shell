@@ -1,3 +1,4 @@
+import QtQuick
 import Quickshell
 import Quickshell.Io
 import Caelestia
@@ -132,7 +133,7 @@ Scope {
                 const visibilities = Visibilities.getForActive();
                 visibilities[drawer] = !visibilities[drawer];
             } else {
-                console.warn(`[IPC] Drawer "${drawer}" does not exist`);
+                console.warn(lc, `Drawer "${drawer}" does not exist`);
             }
         }
 
@@ -213,5 +214,12 @@ Scope {
         }
 
         target: "toaster"
+    }
+
+    LoggingCategory {
+        id: lc
+
+        name: "caelestia.qml.shortcuts"
+        defaultLogLevel: LoggingCategory.Info
     }
 }
