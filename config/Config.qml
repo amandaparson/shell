@@ -27,16 +27,53 @@ Singleton {
     property alias services: adapter.services
     property alias paths: adapter.paths
 
+// Public save function - call this to persist config changes
     property bool recentlySaved: false
 
-    // Public save function - call this to persist config changes
     function save(): void {
         saveTimer.restart();
         recentlySaved = true;
         recentSaveCooldown.restart();
     }
 
-    // Helper function to serialize the config object
+    property bool recentlySaved: false
+
+    ElapsedTimer {
+        id: timer
+    }
+
+    Timer {
+        id: saveTimer
+
+        interval: 500
+        onTriggered: {
+            timer.restart();
+            try {
+                let config = {};
+                try {
+                    config = JSON.parse(fileView.text());
+                } catch (e) {
+                    config = {};
+                }
+
+                config = serializeConfig();
+
+                fileView.setText(JSON.stringify(config, null, 2));
+            } catch (e) {
+                Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
+            }
+        }
+    }
+
+    Timer {
+        id: recentSaveCooldown
+
+        interval: 2000
+        onTriggered: {
+            recentlySaved = false;
+        }
+    }
+
     function serializeConfig(): var {
         return {
             appearance: serializeAppearance(),
@@ -315,9 +352,18 @@ Singleton {
             recolourLogo: lock.recolourLogo,
             enableFprint: lock.enableFprint,
             maxFprintTries: lock.maxFprintTries,
+            verticalScreens: lock.verticalScreens,
+            excludedScreens: lock.excludedScreens,
+            sizes: {
+                heightMult: lock.sizes.heightMult,
+                ratio: lock.sizes.ratio,
+                ratioVertical: lock.sizes.ratioVertical,
+                centerWidth: lock.sizes.centerWidth
+         }
             hideNotifs: lock.hideNotifs
         };
     }
+
 
     function serializeUtilities(): var {
         const vpnProviders = [];
@@ -446,12 +492,10 @@ Singleton {
         path: `${Paths.config}/shell.json`
         watchChanges: true
         onFileChanged: {
-            // Prevent reload loop - don't reload if we just saved
             if (!root.recentlySaved) {
                 timer.restart();
                 reload();
             } else {
-                // Self-initiated save - reload without toast
                 reload();
             }
         }
@@ -459,7 +503,6 @@ Singleton {
             try {
                 JSON.parse(text());
                 const elapsed = timer.elapsedMs();
-                // Only show toast for external changes (not our own saves) and when elapsed time is meaningful
                 if (adapter.utilities.toasts.configLoaded && !root.recentlySaved && elapsed > 0) { // qmllint disable unresolved-type
                     Toaster.toast(qsTr("Config loaded"), qsTr("Config loaded in %1ms").arg(elapsed), "rule_settings"); // qmllint disable unresolved-type
                 } else if (adapter.utilities.toasts.configLoaded && root.recentlySaved && elapsed > 0) { // qmllint disable unresolved-type
