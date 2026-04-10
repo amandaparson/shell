@@ -40,7 +40,6 @@ ColumnLayout {
         color: "transparent"
 
         Loader {
-            asynchronous: true
             anchors.centerIn: parent
             asynchronous: true
             active: opacity > 0

@@ -36,7 +36,6 @@ Singleton {
         recentSaveCooldown.restart();
     }
 
-    property bool recentlySaved: false
 
     ElapsedTimer {
         id: timer
@@ -70,7 +69,7 @@ Singleton {
 
         interval: 2000
         onTriggered: {
-            recentlySaved = false;
+            root.recentlySaved = false;
         }
     }
 
@@ -354,16 +353,15 @@ Singleton {
             maxFprintTries: lock.maxFprintTries,
             verticalScreens: lock.verticalScreens,
             excludedScreens: lock.excludedScreens,
+            hideNotifs: lock.hideNotifs,
             sizes: {
                 heightMult: lock.sizes.heightMult,
                 ratio: lock.sizes.ratio,
                 ratioVertical: lock.sizes.ratioVertical,
                 centerWidth: lock.sizes.centerWidth
-         }
-            hideNotifs: lock.hideNotifs
+            }
         };
     }
-
 
     function serializeUtilities(): var {
         const vpnProviders = [];
@@ -444,46 +442,6 @@ Singleton {
             noNotifsPic: paths.noNotifsPic,
             lockNoNotifsPic: paths.lockNoNotifsPic
         };
-    }
-
-    ElapsedTimer {
-        id: timer
-    }
-
-    Timer {
-        id: saveTimer
-
-        interval: 500
-        onTriggered: {
-            timer.restart();
-            try {
-                // Parse current config to preserve structure and comments if possible
-                let config = {};
-                try {
-                    config = JSON.parse(fileView.text());
-                } catch (e) {
-                    // If parsing fails, start with empty object
-                    config = {};
-                }
-
-                // Update config with current values
-                config = root.serializeConfig();
-
-                // Save to file with pretty printing
-                fileView.setText(JSON.stringify(config, null, 2));
-            } catch (e) {
-                Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
-            }
-        }
-    }
-
-    Timer {
-        id: recentSaveCooldown
-
-        interval: 2000
-        onTriggered: {
-            root.recentlySaved = false;
-        }
     }
 
     FileView {

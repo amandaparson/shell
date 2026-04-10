@@ -163,7 +163,6 @@ ColumnLayout {
 
     component WrappedLoader: Loader {
         asynchronous: true
-        asynchronous: true
         visible: active
     }
 

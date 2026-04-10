@@ -57,7 +57,6 @@ ColumnLayout {
         }
 
         Loader {
-            asynchronous: true
             Layout.leftMargin: Appearance.spacing.small
             Layout.alignment: Qt.AlignVCenter
             asynchronous: true
@@ -110,7 +109,7 @@ ColumnLayout {
     StyledRect {
         Layout.alignment: Qt.AlignHCenter
         implicitWidth: root.centerWidth * 0.8
-        implicitHeight: input.implicitHeight + Appearance.padding.small * 2
+        implicitHeight: input.implicitHeight + Appearance.padding.small * 4
         color: Colours?.tPalette?.m3surfaceContainer ?? "transparent"
         radius: Appearance.rounding.full
         focus: true
